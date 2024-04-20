@@ -4,7 +4,7 @@ import Config from '../config';
 import axios from 'axios';
 import Cookies from 'js-cookie'; 
 
-function CodeEditor() {
+function CodeEditor({output, setOutput}) {
   const [language, setLanguage] = useState("javascript")
   const [code, setCode] =  useState("")
 
@@ -55,7 +55,7 @@ function CodeEditor() {
 
     try {
         const response = await axios.post(`${Config.SERVER_URL}/code`, { code, language });
-        alert(response.data.message)
+        setOutput(response.data.message)
       } catch (error) {
         console.error('Error submitting code:', error);
         alert('Error submitting code');
@@ -68,16 +68,18 @@ function CodeEditor() {
     setLanguage(selectedLanguage)
   }
 
-  return <>
-    <h1>Code Editor</h1>
-    <select name="" id="" onChange={handleLanguageChange}>
+  return <div className="">
+    <select name="language-dropdown" id="language-dropdown" onChange={handleLanguageChange}  className="">
       <option value="javascript">javascript</option>
       <option value="cpp">C++</option>
     </select>
-    <button onClick={handleSubmit}>submit</button>
+
+
+    <button onClick={handleSubmit}
+    className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Run</button>
     <Editor
       height="70vh"
-      width="50vw"
+      width="40vw"
       theme="vs-dark"
       defaultLanguage={language}
       language={language}
@@ -87,7 +89,7 @@ function CodeEditor() {
       beforeMount={handleEditorWillMount}
       onValidate={handleEditorValidation}
     />
-  </> 
+  </div> 
   
 }
 

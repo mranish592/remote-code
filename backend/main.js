@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { z } = require('zod');
+const executeJavascript = require('./language_processors/javascript');
 
 const app = express();
 const port = 3000;
@@ -23,7 +24,7 @@ app.get('/', (req, res) => {
 });
 
 // Sample route for POST /code
-app.post('/code', (req, res) => {
+app.post('/code', async (req, res) => {
   try {
     const { code, language } = inputSchema.parse(req.body);
     // Validate code and language here
@@ -31,7 +32,7 @@ app.post('/code', (req, res) => {
     let output  = ""
     switch(language){
       case "javascript":
-        output  =  "Hi from JS"
+        output  = await executeJavascript(code)
         break;
       case "cpp":
         output = "Hi from CPP"
