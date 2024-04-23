@@ -1,11 +1,8 @@
 import { useRef, useState, useEffect } from 'react'
 import Editor from '@monaco-editor/react';
-import Config from '../config';
-import axios from 'axios';
 import Cookies from 'js-cookie'; 
 
-function CodeEditor({output, setOutput}) {
-  const [language, setLanguage] = useState("javascript")
+function CodeEditor({ className, language, editorRef}) {
   const [code, setCode] =  useState("")
 
   useEffect(() => {
@@ -16,9 +13,6 @@ function CodeEditor({output, setOutput}) {
       setCode(savedCode);
     }
   }, []);
-
-  const editorRef = useRef(null);
-  const monacoRef = useRef(null);
 
   function handleEditorChange(value, event) {
     // here is the current value
@@ -33,7 +27,7 @@ function CodeEditor({output, setOutput}) {
     console.log('onMount: the editor instance:', editor);
     console.log('onMount: the monaco instance:', monaco);
     editorRef.current = editor    
-    monacoRef.current = monaco
+    // monacoRef.current = monaco
   }
 
   function handleEditorWillMount(monaco) {
@@ -45,41 +39,10 @@ function CodeEditor({output, setOutput}) {
     markers.forEach(marker => console.log('onValidate:', marker.message));
   }
 
-  async function handleSubmit() {
-    console.log("editorRef", editorRef.current);
-    console.log("monacoRef", monacoRef.current);
-    console.log("code :: \n", editorRef.current.getValue());
-    const currentCode = editorRef.current.getValue()
-    setCode(currentCode)
-    console.log("currentCode ", currentCode)
-
-    try {
-        const response = await axios.post(`${Config.SERVER_URL}/code`, { code, language });
-        setOutput(response.data.message)
-      } catch (error) {
-        console.error('Error submitting code:', error);
-        alert('Error submitting code');
-      }
-  }
-
-  function handleLanguageChange(event){
-    const selectedLanguage = event.target.value
-    console.log("selected ", selectedLanguage)
-    setLanguage(selectedLanguage)
-  }
-
-  return <div className="">
-    <select name="language-dropdown" id="language-dropdown" onChange={handleLanguageChange}  className="">
-      <option value="javascript">javascript</option>
-      <option value="cpp">C++</option>
-    </select>
-
-
-    <button onClick={handleSubmit}
-    className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Run</button>
+  return <div className={`${className}`}>
     <Editor
-      height="70vh"
-      width="40vw"
+      // height="70vh"
+      // width="60vw"
       theme="vs-dark"
       defaultLanguage={language}
       language={language}
@@ -88,6 +51,9 @@ function CodeEditor({output, setOutput}) {
       onMount={handleEditorDidMount}
       beforeMount={handleEditorWillMount}
       onValidate={handleEditorValidation}
+      options={{
+        minimap: { enabled: false },
+      }}
     />
   </div> 
   

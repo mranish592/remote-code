@@ -4,14 +4,13 @@ import Config from '../config';
 import axios from 'axios';
 import Cookies from 'js-cookie'; 
 
-function CodeOutput({output, setOutput}) {
+function CodeOutput({className, output, setOutput, editorRef}) {
 
 
-  return <div>
-    <button></button>
+  return <div className={`${className}`}>
     <Editor
-      height="70vh"
-      width="40vw"
+      // height="70vh"
+      // width="30vw"
       theme="vs-dark"
       language="plaintext"
       defaultValue=""

@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { z } = require('zod');
 const executeJavascript = require('./language_processors/javascript');
+const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 const port = 3000;
@@ -29,10 +30,11 @@ app.post('/code', async (req, res) => {
     const { code, language } = inputSchema.parse(req.body);
     // Validate code and language here
     // For demonstration purposes, simply sending a sample output
+    const codeFileName = uuidv4()
     let output  = ""
     switch(language){
       case "javascript":
-        output  = await executeJavascript(code)
+        output  = await executeJavascript(code, codeFileName)
         break;
       case "cpp":
         output = "Hi from CPP"
