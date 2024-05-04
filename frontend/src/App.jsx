@@ -7,7 +7,7 @@ function App() {
         <Router>
             <Routes>
                 <Route path="/" element={<Navigate to={`/documents/${uuidv4()}`} />} />
-                <Route path="documents/:id" element={<CollaboratePage />} />
+                <Route path="/documents/:id" element={<CollaboratePage />} />
             </Routes>
         </Router>
     );
