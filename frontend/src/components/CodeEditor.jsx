@@ -1,8 +1,9 @@
 import { useRef, useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import { io } from "socket.io-client";
+import Config from "../config";
 
-const socket = io("ws://localhost:3001");
+const socket = io(Config.WS_SERVER_URL);
 socket.on("connect", () => {
     console.log(`websocket connected`);
 });

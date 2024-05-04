@@ -8,7 +8,7 @@ export function SaveButton({ className, editorRef, documentId }) {
 
         console.log("SaveButton :: handleSave :: currentCode: ", code);
         try {
-            const response = await axios.post(`${Config.SERVER_URL}/save`, {
+            const response = await axios.post(`${Config.HTTP_SERVER_URL}/save`, {
                 code: code,
                 documentId: documentId,
             });

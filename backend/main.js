@@ -71,6 +71,7 @@ const ws = new Server(ServerConfig.WEBSOCKET_PORT, {
         methods: ["GET", "POST"],
     },
 });
+
 ws.on("connection", (socket) => {
     console.log(`connect ${socket.id}`);
     socket.on("disconnect", (reason) => {

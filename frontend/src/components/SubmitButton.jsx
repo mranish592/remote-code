@@ -8,7 +8,7 @@ export function SubmitButton({ className, editorRef, setOutput, language }) {
         console.log("SubmitButton :: handleSubmit :: currentCode: ", code);
 
         try {
-            const response = await axios.post(`${Config.SERVER_URL}/code`, {
+            const response = await axios.post(`${Config.HTTP_SERVER_URL}/code`, {
                 code: code,
                 language: language,
             });
