@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 
 import { CollaboratePage } from "./components/CollaboratePage";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 function App() {
     return (
         <Router>

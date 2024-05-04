@@ -22,6 +22,7 @@ const saveCodeInputSchema = z.object({
 });
 
 app.get("/", (req, res) => {
+    console.log("GET / received, sending 200");
     res.json({ message: "Hello world" });
 });
 

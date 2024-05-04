@@ -1,4 +1,4 @@
-FROM node:slim
+FROM --platform=linux/amd64 node:slim
 RUN mkdir /remote-code-backend
 COPY . /remote-code-backend/
 WORKDIR /remote-code-backend
