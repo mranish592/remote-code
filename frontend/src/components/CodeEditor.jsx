@@ -85,6 +85,7 @@ function CodeEditor({ className, language, editorRef, documentId }) {
                 defaultLanguage={language}
                 language={language}
                 defaultValue={code}
+                value={code}
                 onChange={handleEditorChange}
                 onMount={handleEditorDidMount}
                 beforeMount={handleEditorWillMount}
