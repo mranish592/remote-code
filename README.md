@@ -12,7 +12,7 @@ Collaborative online IDE with remote code execution in various languages.
 
 ## Features
 1. You can write and run code in different programming languages without installing the required dependencies on your system.
-2. You can invite collaborators and observe real-time updates
+2. You can invite collaborators and observe real-time updates.
 
 ## Technical details
 1. React.js and tailwindcss is used along with moncao-react-editor for the frontend.
