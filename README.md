@@ -1,18 +1,22 @@
 # remote-code
-Collaborative online IDE with remote code execution in various languages.
-
-## Check out the demo
-  [remotecode.anishgupta.me](https://remotecode.anishgupta.me)
-  ### Remote code execution demo
-  Select the language as javascript, and write some code. Hit run and observe the output.
-
-  ### Real-time collaboration demo
-  1. write some code, copy the URL, and paste it into a different browser (it could also be a different device).
-  2. Make changes in one browser and observe real-time changes in another.
+Collaborative online code editor with remote code execution in various languages.
 
 ## Features
 1. You can write and run code in different programming languages without installing the required dependencies on your system.
 2. You can invite collaborators and observe real-time updates.
+
+## Demo
+  [remotecode.anishgupta.me](https://remotecode.anishgupta.me)
+  ### Remote code execution demo
+  Select the language as javascript, and write some code. Hit run and observe the output.
+  #### **Example:**
+  ```javascript
+  console.log("hello world from remode code")
+  ```
+
+  ### Real-time collaboration demo
+  1. Write some code, copy the URL, and paste it into a different browser (it could also be a different device).
+  2. Make changes in one browser and observe real-time changes in another.
 
 ## Technical details
 1. React.js and tailwindcss is used along with moncao-react-editor for the frontend.
