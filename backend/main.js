@@ -9,7 +9,11 @@ const { connect, FullCode, findOrCreateFullCode, findAndUpdateFullCode } = requi
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+
+const options = {
+    origin: "*",
+};
+app.use(cors(options));
 
 const runCodeInputSchema = z.object({
     language: z.string().min(1),
@@ -62,47 +66,51 @@ app.post("/save", async (req, res) => {
 
 connect();
 
-app.listen(ServerConfig.HTTP_PORT, () => {
-    console.log(`Server is running at http://localhost:${ServerConfig.HTTP_PORT}`);
-});
+if (ServerConfig.SERVER_MODE === "HTTP" || ServerConfig.SERVER_MODE == "BOTH") {
+    app.listen(ServerConfig.HTTP_PORT, () => {
+        console.log(`Server is running at http://localhost:${ServerConfig.HTTP_PORT}`);
+    });
+}
 
-const ws = new Server(ServerConfig.WEBSOCKET_PORT, {
-    cors: {
-        origin: "*",
-        methods: ["GET", "POST"],
-    },
-});
-
-ws.on("connection", (socket) => {
-    console.log(`connect ${socket.id}`);
-    socket.on("disconnect", (reason) => {
-        console.log(`disconnect ${socket.id} due to ${reason}`);
+if (ServerConfig.SERVER_MODE === "WS" || ServerConfig.SERVER_MODE == "BOTH") {
+    const ws = new Server(ServerConfig.WEBSOCKET_PORT, {
+        cors: {
+            origin: "*",
+            methods: ["GET", "POST"],
+        },
     });
 
-    socket.on("full-code", async function (documentId) {
-        console.log("receive :: full-code ::", documentId);
-        socket.join(documentId);
-        const rooms = socket.adapter.rooms.get(documentId);
-        if (rooms && rooms.size === 1) {
-            socket.emit("full-code", "// type your code here");
+    ws.on("connection", (socket) => {
+        console.log(`connect ${socket.id}`);
+        socket.on("disconnect", (reason) => {
+            console.log(`disconnect ${socket.id} due to ${reason}`);
+        });
+
+        socket.on("full-code", async function (documentId) {
+            console.log("receive :: full-code ::", documentId);
+            socket.join(documentId);
+            const rooms = socket.adapter.rooms.get(documentId);
+            if (rooms && rooms.size === 1) {
+                socket.emit("full-code", "// type your code here");
+                socket.emit("sync-complete", "");
+            }
+            socket.broadcast.to(documentId).emit("sync-code", "");
+            console.log("sent :: sync-code ::", documentId);
+        });
+
+        socket.on("sync-code", async function (documentId, code) {
+            console.log("receive :: sync-code ::", documentId, code);
+            await findAndUpdateFullCode(documentId, code);
+            socket.broadcast.to(documentId).emit("full-code", code);
+            console.log("sent :: full-code ::", documentId, code);
             socket.emit("sync-complete", "");
-        }
-        socket.broadcast.to(documentId).emit("sync-code", "");
-        console.log("sent :: sync-code ::", documentId);
-    });
+            console.log("sent :: sync-complete");
+        });
 
-    socket.on("sync-code", async function (documentId, code) {
-        console.log("receive :: sync-code ::", documentId, code);
-        await findAndUpdateFullCode(documentId, code);
-        socket.broadcast.to(documentId).emit("full-code", code);
-        console.log("sent :: full-code ::", documentId, code);
-        socket.emit("sync-complete", "");
-        console.log("sent :: sync-complete");
+        socket.on("client-edits", (edits, documentId) => {
+            console.log("receive :: client-edits ::", JSON.stringify(edits));
+            socket.broadcast.to(documentId).emit("client-edits", edits);
+            console.log("sent :: client-edits ::", JSON.stringify(edits));
+        });
     });
-
-    socket.on("client-edits", (edits, documentId) => {
-        console.log("receive :: client-edits ::", JSON.stringify(edits));
-        socket.broadcast.to(documentId).emit("client-edits", edits);
-        console.log("sent :: client-edits ::", JSON.stringify(edits));
-    });
-});
+}
