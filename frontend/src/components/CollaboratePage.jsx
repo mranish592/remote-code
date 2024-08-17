@@ -6,6 +6,7 @@ import LanguageSelector from "./LanguageSelector";
 import { SubmitButton } from "./SubmitButton";
 import { useParams } from "react-router-dom";
 import { SaveButton } from "./SaveButton";
+import { CollaborateButton } from "./CollaborateButton";
 
 export function CollaboratePage() {
     const [output, setOutput] = useState("");
@@ -25,6 +26,7 @@ export function CollaboratePage() {
                     <LanguageSelector className="mx-2 my-2" setLanguage={setLanguage}></LanguageSelector>
                     <SubmitButton className="mx-2 my-2" setOutput={setOutput} editorRef={editorRef} language={language}></SubmitButton>
                     <SaveButton className="mx-2 my-2" editorRef={editorRef} documentId={documentId}></SaveButton>
+                    <CollaborateButton className="mx-2 my-2"></CollaborateButton>
                 </div>
                 <div className="grid md:grid-cols-12 grid-cols-1">
                     <CodeEditor
