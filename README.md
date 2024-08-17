@@ -15,7 +15,7 @@ Collaborative online code editor with remote code execution in various languages
   ```
 
   ### Real-time collaboration demo
-  1. Write some code, copy the URL, and paste it into a different browser (it could also be a different device).
+  1. Write some code, click on collaborate button to copy the URL. Paste it into a different browser/tab (it could also be a different device).
   2. Make changes in one browser and observe real-time changes in another.
 
 ## Technical details
@@ -23,6 +23,6 @@ Collaborative online code editor with remote code execution in various languages
 2. HTTP and WebSockets are used to communicate with the backend.
 3. Socket.io is used to sync the real-time changes along with the express.js HTTP server.
 4. MongoDB is used for eventual consistency and long-term saving of collaboration rooms and the code.
-5. The backend is containerized with Docker and deployed on AWS as ECS.
-6. Certificates and domain mapping are added for ALB to expose the HTTPS secure endpoint.
+5. The backend is containerized with Docker and deployed on render.com (Earlier it was deployed on AWS as ECS, but swithced to render for cost savings).
+6. Certificates and domain mapping are added for ALB to expose the HTTPS secure endpoint (this was part of AWS deployment, currently render is used with in-built LB and SSL support).
 7. The frontend is deployed on render.com on the custom domain: [remotecode.anishgupta.me](https://remotecode.anishgupta.me)
