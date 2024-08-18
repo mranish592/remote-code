@@ -5,6 +5,7 @@ WORKDIR /remote-code-backend
 
 RUN apt update && apt install -y \
     procps \
+    curl \
     time
 
 RUN rm -rf node_modules
