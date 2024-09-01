@@ -2,7 +2,7 @@ const executeJavascript = require("./language_processors/javascript");
 const { v4: uuidv4 } = require("uuid");
 const { Server } = require("socket.io");
 const ServerConfig = require("./config");
-const { connect, findAndUpdateFullCode } = require("./db/db");
+const { connect, findAndUpdateFullCode, findOrCreateFullCode } = require("./db/db");
 
 connect();
 
@@ -25,7 +25,8 @@ if (ServerConfig.SERVER_MODE === "WS" || ServerConfig.SERVER_MODE == "BOTH") {
             socket.join(documentId);
             const rooms = socket.adapter.rooms.get(documentId);
             if (rooms && rooms.size === 1) {
-                socket.emit("full-code", "// type your code here");
+                const fullCode = await findOrCreateFullCode(documentId);
+                socket.emit("full-code", fullCode.code);
                 socket.emit("sync-complete", "");
             }
             socket.broadcast.to(documentId).emit("sync-code", "");

@@ -27,7 +27,7 @@ async function findOrCreateFullCode(documentId) {
     console.log("fullCode from DB:", fullCode);
     if (fullCode) return fullCode;
 
-    const doc = await FullCode.create({ _id: documentId, code: "full code" });
+    const doc = await FullCode.create({ _id: documentId, code: "// type your code here" });
     console.log("fullCode from after saving:", doc);
     return doc;
 }
