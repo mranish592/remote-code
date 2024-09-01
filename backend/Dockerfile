@@ -14,6 +14,6 @@ RUN chmod +x scripts/*
 
 EXPOSE 80
 EXPOSE 3000
-EXPOSE 3001
+
 # ENTRYPOINT ["tail", "-f", "/dev/null"]
 ENTRYPOINT ["scripts/entrypoint.sh"]

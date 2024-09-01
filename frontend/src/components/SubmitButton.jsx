@@ -1,23 +1,35 @@
 import Config from "../config";
-import axios from "axios";
 import playButton from "../assets/play-button-svgrepo-com.svg";
+import { io } from "socket.io-client";
+import { useEffect } from "react";
 
+const socket = io(Config.WS_SERVER_URL);
+socket.on("connect", () => {
+    console.log(`websocket connected`);
+});
+socket.on("server", (message) => {
+    console.log("websocket message received:", message);
+});
 export function SubmitButton({ className, editorRef, setOutput, language }) {
     async function handleSubmit() {
         const code = editorRef.current.getValue();
         console.log("SubmitButton :: handleSubmit :: currentCode: ", code);
 
         try {
-            const response = await axios.post(`${Config.HTTP_SERVER_URL}/code`, {
-                code: code,
-                language: language,
-            });
-            setOutput(response.data.message);
+            socket.emit("run-code", language, code);
         } catch (error) {
             console.error("SubmitButton :: handleSubmit :: Error submitting code:", error);
             alert("SubmitButton :: handleSubmit :: Error submitting code");
         }
     }
+
+    useEffect(() => {
+        socket.on("run-code", (message) => {
+            console.log("received :: run-code", JSON.stringify(message));
+            const newOutput = JSON.parse(message).message;
+            setOutput(newOutput);
+        });
+    }, [socket]);
 
     return (
         <div className={`${className}`}>

@@ -1,76 +1,10 @@
-const express = require("express");
-const cors = require("cors");
-const { z } = require("zod");
 const executeJavascript = require("./language_processors/javascript");
 const { v4: uuidv4 } = require("uuid");
 const { Server } = require("socket.io");
 const ServerConfig = require("./config");
-const { connect, FullCode, findOrCreateFullCode, findAndUpdateFullCode } = require("./db/db");
-
-const app = express();
-app.use(express.json());
-
-const options = {
-    origin: "*",
-};
-app.use(cors(options));
-
-const runCodeInputSchema = z.object({
-    language: z.string().min(1),
-    code: z.string().min(0),
-});
-
-const saveCodeInputSchema = z.object({
-    documentId: z.string().min(1),
-    code: z.string().min(0),
-});
-
-app.get("/", (req, res) => {
-    console.log("GET / received, sending 200");
-    res.json({ message: "Hello world" });
-});
-
-app.post("/code", async (req, res) => {
-    try {
-        const { language, code } = runCodeInputSchema.parse(req.body);
-
-        const codeFileName = uuidv4();
-        let output = "";
-        switch (language) {
-            case "javascript":
-                output = await executeJavascript(code, codeFileName);
-                break;
-            case "cpp":
-                output = "CPP is not supported yet. The support will be added soon";
-                break;
-            default:
-                output = "Unsupported language";
-        }
-        res.json({ message: output });
-    } catch (error) {
-        console.error("Input validation error:", error);
-        res.status(400).json({ error: "Invalid input" });
-    }
-});
-
-app.post("/save", async (req, res) => {
-    try {
-        const { documentId, code } = saveCodeInputSchema.parse(req.body);
-        await findAndUpdateFullCode(documentId, code);
-        res.json({ message: "code saved successfully" });
-    } catch (error) {
-        console.error("Input validation error:", error);
-        res.status(400).json({ error: "Invalid input" });
-    }
-});
+const { connect, findAndUpdateFullCode } = require("./db/db");
 
 connect();
-
-if (ServerConfig.SERVER_MODE === "HTTP" || ServerConfig.SERVER_MODE == "BOTH") {
-    app.listen(ServerConfig.HTTP_PORT, () => {
-        console.log(`Server is running at http://localhost:${ServerConfig.HTTP_PORT}`);
-    });
-}
 
 if (ServerConfig.SERVER_MODE === "WS" || ServerConfig.SERVER_MODE == "BOTH") {
     const ws = new Server(ServerConfig.WEBSOCKET_PORT, {
@@ -111,6 +45,37 @@ if (ServerConfig.SERVER_MODE === "WS" || ServerConfig.SERVER_MODE == "BOTH") {
             console.log("receive :: client-edits ::", JSON.stringify(edits));
             socket.broadcast.to(documentId).emit("client-edits", edits);
             console.log("sent :: client-edits ::", JSON.stringify(edits));
+        });
+
+        socket.on("run-code", async function (language, code) {
+            try {
+                const codeFileName = uuidv4();
+                let output = "";
+                switch (language) {
+                    case "javascript":
+                        output = await executeJavascript(code, codeFileName);
+                        break;
+                    case "cpp":
+                        output = "CPP is not supported yet. The support will be added soon";
+                        break;
+                    default:
+                        output = "Unsupported language";
+                }
+                socket.emit("run-code", JSON.stringify({ message: output }));
+            } catch (error) {
+                console.error("Internal Server Error:", error);
+                socket.emit("run-code", JSON.stringify({ error: "Internal Server Error" }));
+            }
+        });
+
+        socket.on("save-code", async function (documentId, code) {
+            try {
+                await findAndUpdateFullCode(documentId, code);
+                socket.emit("save-code", JSON.stringify({ message: "code saved successfully" }));
+            } catch (error) {
+                console.error("Internal Server Error:", error);
+                socket.emit("save-code", JSON.stringify({ error: "Internal Server Error" }));
+            }
         });
     });
 }

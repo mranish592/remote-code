@@ -1,23 +1,38 @@
 import saveButton from "../assets/save-svgrepo-com.svg";
-import axios from "axios";
 import Config from "../config";
+import { io } from "socket.io-client";
+import { useEffect } from "react";
+
+const socket = io(Config.WS_SERVER_URL);
+socket.on("connect", () => {
+    console.log(`websocket connected`);
+});
+socket.on("server", (message) => {
+    console.log("websocket message received:", message);
+});
 
 export function SaveButton({ className, editorRef, documentId }) {
     async function handleSave() {
         const code = editorRef.current.getValue();
 
-        console.log("SaveButton :: handleSave :: currentCode: ", code);
+        console.log("SaveButton :: handleSave :: currentCode:", code);
         try {
-            const response = await axios.post(`${Config.HTTP_SERVER_URL}/save`, {
-                code: code,
-                documentId: documentId,
-            });
-            console.log("SaveButton :: handleSave :: response:", response);
+            socket.emit("save-code", documentId, code);
         } catch (error) {
             console.error("SaveButton :: handleSave :: Error submitting code:", error);
             alert("SaveButton :: handleSave :: Error submitting code");
         }
     }
+
+    useEffect(() => {
+        socket.on("save-code", (message) => {
+            console.log("received :: save-code", JSON.stringify(message));
+            if (JSON.parse(message).error != null) {
+                alert("SaveButton :: handleSave :: Error submitting code");
+            }
+        });
+    }, [socket]);
+
     return (
         <div className={`${className}`}>
             <button className="bg-gray-700 p-2 rounded-lg block w-full text-sm hover:bg-gray-600 text-white" onClick={handleSave}>
