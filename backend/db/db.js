@@ -29,7 +29,7 @@ async function findOrCreateFullCode(documentId) {
 
     const doc = await FullCode.create({
         _id: documentId,
-        code: "// Click on Collaborate button and open the link in another browswer\n// Type your code here",
+        code: "// Click on Collaborate button and open the link in another browser\n// Type your code here",
     });
     console.log("fullCode from after saving:", doc);
     return doc;
