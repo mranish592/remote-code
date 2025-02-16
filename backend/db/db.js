@@ -27,9 +27,24 @@ async function findOrCreateFullCode(documentId) {
     console.log("fullCode from DB:", fullCode);
     if (fullCode) return fullCode;
 
+    const defaultCode = `/*
+Welcome to Remote Code!
+This is a collaborative remote code executor.
+
+Remote Code Execution: 
+1. Type some javscript code. Example: 'console.log("hello remote code")'
+2. Click on Run
+
+Collaboration:
+1. Click on Collaborate button and open the link in another browser.
+2. Now type code in one browser and observe changes in another.
+*/
+// Type your code here
+    `;
+
     const doc = await FullCode.create({
         _id: documentId,
-        code: "// Click on Collaborate button and open the link in another browser\n// Type your code here",
+        code: defaultCode,
     });
     console.log("fullCode from after saving:", doc);
     return doc;
